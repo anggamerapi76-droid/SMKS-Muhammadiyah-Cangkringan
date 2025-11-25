@@ -4,7 +4,7 @@ import { UserRole, SiteSettings, User, Teacher, NewsItem, Alumni, JobListing, Ma
 import { 
   Lock, Settings, FileText, Users, Briefcase, LogOut, 
   Save, Plus, Trash2, CheckCircle, AlertCircle, LayoutDashboard,
-  Image as ImageIcon, Globe, Shield, UserCog, Edit, X, Layers, Info, Eye, EyeOff
+  Image as ImageIcon, Globe, Shield, UserCog, Edit, X, Layers, Info, Eye, EyeOff, Menu
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -19,6 +19,7 @@ const Admin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile menu state
   const navigate = useNavigate();
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
@@ -83,6 +84,11 @@ const Admin: React.FC = () => {
     setUsername('');
     setPassword('');
     navigate('/');
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false); // Close mobile menu on selection
   };
 
   // PERSISTENCE WRAPPERS
@@ -274,7 +280,6 @@ const Admin: React.FC = () => {
   }
 
   // --- COMMON STYLES ---
-  // Ensure background and text colors are explicitly set for light and dark modes
   const inputClass = "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-muca-blue outline-none text-slate-900 dark:text-white bg-white dark:bg-slate-700 transition-colors placeholder-gray-400 dark:placeholder-gray-500";
   const labelClass = "block text-sm font-bold text-slate-900 dark:text-white mb-2";
   const cardClass = "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors";
@@ -332,7 +337,7 @@ const Admin: React.FC = () => {
     );
   }
 
-  // Handlers for switching tabs/modes
+  // Handlers for switching modes
   const handleEditMajor = (item: Major) => {
     setMajorForm(item);
     setEditingMajorId(item.id);
@@ -391,53 +396,82 @@ const Admin: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-slate-950 flex font-sans transition-colors duration-300">
       <SEO title="Admin Dashboard" description="CMS SMK MUCA" />
+      
+      {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-xl text-white font-medium animate-fade-in-up flex items-center gap-2 ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+        <div className={`fixed top-4 right-4 z-[60] px-6 py-3 rounded-lg shadow-xl text-white font-medium animate-fade-in-up flex items-center gap-2 ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
           {toast.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
           {toast.message}
         </div>
       )}
 
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 text-white flex-shrink-0 hidden md:flex flex-col h-screen fixed z-20">
-        <div className="p-6 border-b border-gray-800 flex items-center gap-3">
-          <div className="w-8 h-8 bg-muca-yellow rounded-lg flex items-center justify-center text-slate-900 font-bold text-xs">CMS</div>
-          <div><h1 className="font-bold text-lg leading-tight">Admin Panel</h1><p className="text-gray-500 text-xs">v2.0.1 (Beta)</p></div>
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-20 bg-black/50 backdrop-blur-sm md:hidden" 
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Navigation */}
+      <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 border-r border-slate-800 text-white flex-col h-screen transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:flex-shrink-0 ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+        <div className="p-6 border-b border-gray-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-muca-yellow rounded-lg flex items-center justify-center text-slate-900 font-bold text-xs">CMS</div>
+            <div><h1 className="font-bold text-lg leading-tight">Admin Panel</h1><p className="text-gray-500 text-xs">v2.0.1 (Beta)</p></div>
+          </div>
+          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+            <X size={24} />
+          </button>
         </div>
         <nav className="p-4 space-y-1 overflow-y-auto flex-grow custom-scrollbar">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-4 mt-2">Main Menu</p>
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'dashboard' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><LayoutDashboard size={18} /> Dashboard</button>
+          <button onClick={() => handleTabChange('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'dashboard' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><LayoutDashboard size={18} /> Dashboard</button>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-4 mt-6">Content</p>
-          <button onClick={() => setActiveTab('majors')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'majors' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Layers size={18} /> Jurusan</button>
-          <button onClick={() => setActiveTab('staff')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'staff' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><UserCog size={18} /> Staff & Guru</button>
-          <button onClick={() => setActiveTab('berita')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'berita' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><FileText size={18} /> Kelola Berita</button>
-          <button onClick={() => setActiveTab('alumni')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'alumni' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Users size={18} /> Data Alumni</button>
-          <button onClick={() => setActiveTab('bkk')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'bkk' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Briefcase size={18} /> Bursa Kerja (BKK)</button>
+          <button onClick={() => handleTabChange('majors')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'majors' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Layers size={18} /> Jurusan</button>
+          <button onClick={() => handleTabChange('staff')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'staff' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><UserCog size={18} /> Staff & Guru</button>
+          <button onClick={() => handleTabChange('berita')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'berita' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><FileText size={18} /> Kelola Berita</button>
+          <button onClick={() => handleTabChange('alumni')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'alumni' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Users size={18} /> Data Alumni</button>
+          <button onClick={() => handleTabChange('bkk')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'bkk' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Briefcase size={18} /> Bursa Kerja (BKK)</button>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-4 mt-6">System</p>
-          <button onClick={() => setActiveTab('settings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'settings' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Settings size={18} /> Pengaturan Website</button>
-          <button onClick={() => setActiveTab('users')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'users' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Shield size={18} /> Manajemen User</button>
+          <button onClick={() => handleTabChange('settings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'settings' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Settings size={18} /> Pengaturan Website</button>
+          <button onClick={() => handleTabChange('users')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'users' ? 'bg-muca-blue text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}><Shield size={18} /> Manajemen User</button>
         </nav>
         <div className="p-4 border-t border-gray-800">
           <button onClick={handleLogout} className="flex items-center gap-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 w-full px-4 py-3 rounded-lg transition-colors"><LogOut size={18} /> Logout</button>
         </div>
       </aside>
 
-      <main className="flex-1 md:ml-64 p-8 overflow-y-auto h-screen custom-scrollbar relative z-10">
-        <header className="flex justify-between items-center mb-8">
-          <div>
-             <h2 className="text-3xl font-bold text-slate-800 dark:text-white capitalize flex items-center gap-2">
-              {activeTab === 'dashboard' && "Dashboard Overview"}
-              {activeTab !== 'dashboard' && activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-            </h2>
+      <main className="flex-1 md:ml-0 p-4 md:p-8 overflow-y-auto h-screen custom-scrollbar relative z-10 w-full">
+        <header className="flex justify-between items-center mb-8 sticky top-0 bg-gray-100/95 dark:bg-slate-950/95 backdrop-blur z-20 py-2">
+          <div className="flex items-center gap-4">
+            {/* Mobile Menu Button */}
+            <button 
+              className="md:hidden p-2 text-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
+            <div>
+               <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white capitalize flex items-center gap-2">
+                {activeTab === 'dashboard' && "Dashboard Overview"}
+                {activeTab !== 'dashboard' && activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+              </h2>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <div className="w-10 h-10 bg-muca-blue rounded-full flex items-center justify-center text-white font-bold">SA</div>
+            <div className="text-right hidden sm:block">
+               <p className="text-sm font-bold text-slate-800 dark:text-white">Super Admin</p>
+               <p className="text-xs text-green-600 dark:text-green-400 flex items-center justify-end gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span> Online</p>
+            </div>
+            <div className="w-10 h-10 bg-gradient-to-tr from-muca-blue to-blue-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg">SA</div>
           </div>
         </header>
 
         {/* --- DYNAMIC CONTENT RENDERING --- */}
         {activeTab === 'dashboard' && (
-           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-fade-in">
               <div className={cardClass + " p-6"}>
                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Berita</p>
                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{newsList.length}</p>
@@ -462,26 +496,28 @@ const Admin: React.FC = () => {
           <div className="animate-fade-in">
              {!isEditingMajor ? (
               <div className={cardClass}>
-                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-900/50">
+                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50/50 dark:bg-slate-900/50 gap-4">
                    <div><h3 className="text-lg font-bold text-slate-800 dark:text-white">Pilihan Jurusan Masa Depan</h3><p className="text-gray-500 dark:text-gray-400 text-sm">Kelola program keahlian yang ditampilkan di beranda.</p></div>
-                   <button onClick={handleCreateMajor} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Tambah Jurusan</button>
+                   <button onClick={handleCreateMajor} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto justify-center"><Plus size={18} /> Tambah Jurusan</button>
                 </div>
-                <table className="w-full text-left">
-                   <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kode</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama Jurusan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kategori</th><th className="p-4 text-right">Aksi</th></tr></thead>
-                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                      {majorsList.map(item => (
-                         <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                            <td className="p-4 font-bold text-slate-800 dark:text-white">{item.code}</td>
-                            <td className="p-4 text-gray-700 dark:text-gray-300 flex items-center gap-3">
-                               <img src={item.image} alt="" className="w-10 h-10 rounded-lg object-cover bg-gray-200 dark:bg-slate-600" />
-                               {item.name}
-                            </td>
-                            <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold">{item.category}</span></td>
-                            <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditMajor(item)} className="text-blue-500 dark:text-blue-400 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteMajor(item.id)} className="text-red-500 dark:text-red-400 p-2"><Trash2 size={18}/></button></div></td>
-                         </tr>
-                      ))}
-                   </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left min-w-[600px]">
+                     <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kode</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama Jurusan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kategori</th><th className="p-4 text-right">Aksi</th></tr></thead>
+                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                        {majorsList.map(item => (
+                           <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                              <td className="p-4 font-bold text-slate-800 dark:text-white">{item.code}</td>
+                              <td className="p-4 text-gray-700 dark:text-gray-300 flex items-center gap-3">
+                                 <img src={item.image} alt="" className="w-10 h-10 rounded-lg object-cover bg-gray-200 dark:bg-slate-600" />
+                                 {item.name}
+                              </td>
+                              <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold">{item.category}</span></td>
+                              <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditMajor(item)} className="text-blue-500 dark:text-blue-400 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteMajor(item.id)} className="text-red-500 dark:text-red-400 p-2"><Trash2 size={18}/></button></div></td>
+                           </tr>
+                        ))}
+                     </tbody>
+                  </table>
+                </div>
               </div>
             ) : (
               <div className={cardClass + " p-8 animate-fade-in-up"}>
@@ -531,9 +567,9 @@ const Admin: React.FC = () => {
                           </div>
                        </div>
                     </div>
-                    <div className="flex justify-end gap-4">
+                    <div className="flex justify-end gap-4 flex-col md:flex-row">
                        <button type="button" onClick={() => setIsEditingMajor(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-bold text-gray-600 dark:text-gray-300">Batal</button>
-                       <button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2"><Save size={18}/> Simpan Data</button>
+                       <button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2 justify-center"><Save size={18}/> Simpan Data</button>
                     </div>
                  </form>
               </div>
@@ -546,26 +582,28 @@ const Admin: React.FC = () => {
            <div className="animate-fade-in">
              {!isEditingStaff ? (
                 <div className={cardClass}>
-                  <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-900/50">
+                  <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50/50 dark:bg-slate-900/50 gap-4">
                      <div><h3 className="text-lg font-bold text-slate-800 dark:text-white">Direktori Guru & Karyawan</h3><p className="text-gray-500 dark:text-gray-400 text-sm">Kelola data tenaga pendidik dan kependidikan.</p></div>
-                     <button onClick={handleCreateStaff} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Tambah Staff</button>
+                     <button onClick={handleCreateStaff} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto justify-center"><Plus size={18} /> Tambah Staff</button>
                   </div>
-                  <table className="w-full text-left">
-                     <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama Lengkap</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Jabatan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kategori</th><th className="p-4 text-right">Aksi</th></tr></thead>
-                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                        {teachers.map(item => (
-                           <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                              <td className="p-4 text-gray-700 dark:text-gray-300 flex items-center gap-3">
-                                 <img src={item.image} alt="" className="w-8 h-8 rounded-full object-cover bg-gray-200 dark:bg-slate-600" />
-                                 {item.name}
-                              </td>
-                              <td className="p-4 text-gray-700 dark:text-gray-300">{item.role}</td>
-                              <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold">{item.category}</span></td>
-                              <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditStaff(item)} className="text-blue-500 dark:text-blue-400 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteStaff(item.id)} className="text-red-500 dark:text-red-400 p-2"><Trash2 size={18}/></button></div></td>
-                           </tr>
-                        ))}
-                     </tbody>
-                  </table>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[600px]">
+                       <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama Lengkap</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Jabatan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kategori</th><th className="p-4 text-right">Aksi</th></tr></thead>
+                       <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                          {teachers.map(item => (
+                             <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                                <td className="p-4 text-gray-700 dark:text-gray-300 flex items-center gap-3">
+                                   <img src={item.image} alt="" className="w-8 h-8 rounded-full object-cover bg-gray-200 dark:bg-slate-600" />
+                                   {item.name}
+                                </td>
+                                <td className="p-4 text-gray-700 dark:text-gray-300">{item.role}</td>
+                                <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold">{item.category}</span></td>
+                                <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditStaff(item)} className="text-blue-500 dark:text-blue-400 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteStaff(item.id)} className="text-red-500 dark:text-red-400 p-2"><Trash2 size={18}/></button></div></td>
+                             </tr>
+                          ))}
+                       </tbody>
+                    </table>
+                  </div>
                 </div>
              ) : (
                 <div className={cardClass + " p-8 animate-fade-in-up"}>
@@ -603,9 +641,9 @@ const Admin: React.FC = () => {
                            <ImageUpload label="Foto Profil" currentImage={staffForm.image} onImageChange={(base64) => setStaffForm({...staffForm, image: base64})} />
                         </div>
                      </div>
-                     <div className="flex justify-end gap-4 mt-6">
+                     <div className="flex justify-end gap-4 mt-6 flex-col md:flex-row">
                         <button type="button" onClick={() => setIsEditingStaff(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-bold text-gray-600 dark:text-gray-300">Batal</button>
-                        <button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2"><Save size={18}/> Simpan</button>
+                        <button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2 justify-center"><Save size={18}/> Simpan</button>
                      </div>
                   </form>
                 </div>
@@ -618,23 +656,25 @@ const Admin: React.FC = () => {
            <div className="animate-fade-in">
              {!isEditingNews ? (
                 <div className={cardClass}>
-                   <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-900/50">
+                   <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50/50 dark:bg-slate-900/50 gap-4">
                      <div><h3 className="text-lg font-bold text-slate-800 dark:text-white">Daftar Berita & Artikel</h3></div>
-                     <button onClick={handleCreateNews} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Tambah Berita</button>
+                     <button onClick={handleCreateNews} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto justify-center"><Plus size={18} /> Tambah Berita</button>
                    </div>
-                   <table className="w-full text-left">
-                      <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Judul</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Tanggal</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kategori</th><th className="p-4 text-right">Aksi</th></tr></thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                         {newsList.map(item => (
-                            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                               <td className="p-4 text-gray-700 dark:text-gray-300 font-medium truncate max-w-xs">{item.title}</td>
-                               <td className="p-4 text-gray-600 dark:text-gray-400">{item.date}</td>
-                               <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-bold">{item.category}</span></td>
-                               <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditNews(item)} className="text-blue-500 dark:text-blue-400 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteNews(item.id)} className="text-red-500 dark:text-red-400 p-2"><Trash2 size={18}/></button></div></td>
-                            </tr>
-                         ))}
-                      </tbody>
-                   </table>
+                   <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[600px]">
+                        <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Judul</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Tanggal</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kategori</th><th className="p-4 text-right">Aksi</th></tr></thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                            {newsList.map(item => (
+                                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                                <td className="p-4 text-gray-700 dark:text-gray-300 font-medium truncate max-w-xs">{item.title}</td>
+                                <td className="p-4 text-gray-600 dark:text-gray-400">{item.date}</td>
+                                <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 font-bold">{item.category}</span></td>
+                                <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditNews(item)} className="text-blue-500 dark:text-blue-400 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteNews(item.id)} className="text-red-500 dark:text-red-400 p-2"><Trash2 size={18}/></button></div></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                   </div>
                 </div>
              ) : (
                 <div className={cardClass + " p-8 animate-fade-in-up"}>
@@ -668,9 +708,9 @@ const Admin: React.FC = () => {
                             <ImageUpload label="Gambar Utama" currentImage={newsForm.image} onImageChange={(base64) => setNewsForm({...newsForm, image: base64})} />
                          </div>
                       </div>
-                      <div className="flex justify-end gap-4 mt-6">
+                      <div className="flex justify-end gap-4 mt-6 flex-col md:flex-row">
                         <button type="button" onClick={() => setIsEditingNews(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-bold text-gray-600 dark:text-gray-300">Batal</button>
-                        <button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2"><Save size={18}/> Publish</button>
+                        <button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2 justify-center"><Save size={18}/> Publish</button>
                       </div>
                    </form>
                 </div>
@@ -683,23 +723,25 @@ const Admin: React.FC = () => {
            <div className="animate-fade-in">
              {!isEditingAlumni ? (
                 <div className={cardClass}>
-                   <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-900/50">
+                   <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50/50 dark:bg-slate-900/50 gap-4">
                       <div><h3 className="text-lg font-bold text-slate-800 dark:text-white">Data Alumni Sukses</h3></div>
-                      <button onClick={handleCreateAlumni} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Tambah Alumni</button>
+                      <button onClick={handleCreateAlumni} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto justify-center"><Plus size={18} /> Tambah Alumni</button>
                    </div>
-                   <table className="w-full text-left">
-                      <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Lulusan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Pekerjaan</th><th className="p-4 text-right">Aksi</th></tr></thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                         {alumniList.map(item => (
-                            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                               <td className="p-4 flex items-center gap-3 dark:text-gray-300"><img src={item.image} className="w-8 h-8 rounded-full bg-gray-200" alt=""/>{item.name}</td>
-                               <td className="p-4 dark:text-gray-300">{item.graduationYear}</td>
-                               <td className="p-4 dark:text-gray-300">{item.jobTitle} at {item.company}</td>
-                               <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditAlumni(item)} className="text-blue-500 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteAlumni(item.id)} className="text-red-500 p-2"><Trash2 size={18}/></button></div></td>
-                            </tr>
-                         ))}
-                      </tbody>
-                   </table>
+                   <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[600px]">
+                        <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Lulusan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Pekerjaan</th><th className="p-4 text-right">Aksi</th></tr></thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                            {alumniList.map(item => (
+                                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                                <td className="p-4 flex items-center gap-3 dark:text-gray-300"><img src={item.image} className="w-8 h-8 rounded-full bg-gray-200" alt=""/>{item.name}</td>
+                                <td className="p-4 dark:text-gray-300">{item.graduationYear}</td>
+                                <td className="p-4 dark:text-gray-300">{item.jobTitle} at {item.company}</td>
+                                <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditAlumni(item)} className="text-blue-500 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteAlumni(item.id)} className="text-red-500 p-2"><Trash2 size={18}/></button></div></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                   </div>
                 </div>
              ) : (
                 <div className={cardClass + " p-8 animate-fade-in-up"}>
@@ -716,7 +758,7 @@ const Admin: React.FC = () => {
                          <div className="col-span-full"><label className={labelClass}>Testimoni</label><textarea rows={3} value={alumniForm.testimonial} onChange={e => setAlumniForm({...alumniForm, testimonial: e.target.value})} className={inputClass}></textarea></div>
                          <div><ImageUpload label="Foto Alumni" currentImage={alumniForm.image} onImageChange={(base64) => setAlumniForm({...alumniForm, image: base64})} /></div>
                       </div>
-                      <div className="flex justify-end gap-4"><button type="button" onClick={() => setIsEditingAlumni(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-bold text-gray-600 dark:text-gray-300">Batal</button><button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold shadow-lg flex items-center gap-2"><Save size={18}/> Simpan</button></div>
+                      <div className="flex justify-end gap-4 flex-col md:flex-row"><button type="button" onClick={() => setIsEditingAlumni(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-bold text-gray-600 dark:text-gray-300">Batal</button><button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold shadow-lg flex items-center gap-2 justify-center"><Save size={18}/> Simpan</button></div>
                    </form>
                 </div>
              )}
@@ -728,24 +770,26 @@ const Admin: React.FC = () => {
            <div className="animate-fade-in">
              {!isEditingJob ? (
                 <div className={cardClass}>
-                   <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-900/50">
+                   <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50/50 dark:bg-slate-900/50 gap-4">
                       <div><h3 className="text-lg font-bold text-slate-800 dark:text-white">Lowongan Kerja (BKK)</h3></div>
-                      <button onClick={handleCreateJob} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Tambah Lowongan</button>
+                      <button onClick={handleCreateJob} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto justify-center"><Plus size={18} /> Tambah Lowongan</button>
                    </div>
-                   <table className="w-full text-left">
-                      <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Posisi</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Perusahaan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Tipe</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Deadline</th><th className="p-4 text-right">Aksi</th></tr></thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                         {jobList.map(item => (
-                            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                               <td className="p-4 font-medium dark:text-white">{item.title}</td>
-                               <td className="p-4 dark:text-gray-300">{item.company}</td>
-                               <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold">{item.type}</span></td>
-                               <td className="p-4 text-red-500 dark:text-red-400 font-bold text-xs">{item.deadline}</td>
-                               <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditJob(item)} className="text-blue-500 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteJob(item.id)} className="text-red-500 p-2"><Trash2 size={18}/></button></div></td>
-                            </tr>
-                         ))}
-                      </tbody>
-                   </table>
+                   <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[600px]">
+                        <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Posisi</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Perusahaan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Tipe</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Deadline</th><th className="p-4 text-right">Aksi</th></tr></thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                            {jobList.map(item => (
+                                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                                <td className="p-4 font-medium dark:text-white">{item.title}</td>
+                                <td className="p-4 dark:text-gray-300">{item.company}</td>
+                                <td className="p-4"><span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold">{item.type}</span></td>
+                                <td className="p-4 text-red-500 dark:text-red-400 font-bold text-xs">{item.deadline}</td>
+                                <td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditJob(item)} className="text-blue-500 p-2"><Edit size={18}/></button><button onClick={() => handleDeleteJob(item.id)} className="text-red-500 p-2"><Trash2 size={18}/></button></div></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                   </div>
                 </div>
              ) : (
                 <div className={cardClass + " p-8 animate-fade-in-up"}>
@@ -761,7 +805,7 @@ const Admin: React.FC = () => {
                          <div><label className={labelClass}>Batas Lamaran</label><input type="date" required value={jobForm.deadline} onChange={e => setJobForm({...jobForm, deadline: e.target.value})} className={inputClass} /></div>
                          <div><label className={labelClass}>Jenis Pekerjaan</label><select value={jobForm.type} onChange={e => setJobForm({...jobForm, type: e.target.value as any})} className={inputClass}><option>Full-time</option><option>Part-time</option><option>Internship</option></select></div>
                       </div>
-                      <div className="flex justify-end gap-4"><button type="button" onClick={() => setIsEditingJob(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-bold text-gray-600 dark:text-gray-300">Batal</button><button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold shadow-lg flex items-center gap-2"><Save size={18}/> Publish</button></div>
+                      <div className="flex justify-end gap-4 flex-col md:flex-row"><button type="button" onClick={() => setIsEditingJob(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-bold text-gray-600 dark:text-gray-300">Batal</button><button type="submit" className="px-6 py-2 bg-muca-blue text-white rounded-lg font-bold shadow-lg flex items-center gap-2 justify-center"><Save size={18}/> Publish</button></div>
                    </form>
                 </div>
              )}
@@ -876,7 +920,7 @@ const Admin: React.FC = () => {
                  </div>
 
                  <div className="flex justify-end">
-                    <button type="submit" className="px-8 py-3 bg-muca-blue text-white rounded-xl font-bold hover:bg-blue-700 shadow-xl flex items-center gap-2"><Save size={20}/> Simpan Perubahan</button>
+                    <button type="submit" className="px-8 py-3 bg-muca-blue text-white rounded-xl font-bold hover:bg-blue-700 shadow-xl flex items-center gap-2 justify-center w-full md:w-auto"><Save size={20}/> Simpan Perubahan</button>
                  </div>
               </form>
            </div>
@@ -909,20 +953,22 @@ const Admin: React.FC = () => {
                     </div>
                  )}
 
-                 <table className="w-full text-left">
-                    <thead className="bg-gray-100 dark:bg-slate-900"><tr><th className="p-4 rounded-l-lg text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Username</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Role</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Last Login</th><th className="p-4 rounded-r-lg text-right">Aksi</th></tr></thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                       {users.map(u => (
-                          <tr key={u.id}>
-                             <td className="p-4 font-bold text-slate-800 dark:text-white">{u.name}</td>
-                             <td className="p-4 text-gray-700 dark:text-gray-300 text-sm font-mono">@{u.username}</td>
-                             <td className="p-4"><span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 px-2 py-1 rounded text-xs font-bold uppercase">{u.role}</span></td>
-                             <td className="p-4 text-gray-500 dark:text-gray-400 text-sm">{u.lastLogin}</td>
-                             <td className="p-4 text-right"><button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2"><Trash2 size={18}/></button></td>
-                          </tr>
-                       ))}
-                    </tbody>
-                 </table>
+                 <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[600px]">
+                        <thead className="bg-gray-100 dark:bg-slate-900"><tr><th className="p-4 rounded-l-lg text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Username</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Role</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Last Login</th><th className="p-4 rounded-r-lg text-right">Aksi</th></tr></thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                        {users.map(u => (
+                            <tr key={u.id}>
+                                <td className="p-4 font-bold dark:text-white">{u.name}</td>
+                                <td className="p-4 dark:text-gray-300 text-sm font-mono">@{u.username}</td>
+                                <td className="p-4"><span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 px-2 py-1 rounded text-xs font-bold uppercase">{u.role}</span></td>
+                                <td className="p-4 text-gray-500 dark:text-gray-400 text-sm">{u.lastLogin}</td>
+                                <td className="p-4 text-right"><button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2"><Trash2 size={18}/></button></td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                 </div>
               </div>
            </div>
         )}
