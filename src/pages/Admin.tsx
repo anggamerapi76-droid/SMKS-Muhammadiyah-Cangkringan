@@ -1,24 +1,16 @@
 
-import React, { useState } from 'react';
-import { UserRole, SiteSettings, User, Teacher, NewsItem, Alumni, JobListing, Major, Facility, GalleryItem } from '../types';
-import { SCHOOL_INFO, MOCK_TEACHERS, PRINCIPAL, MOCK_NEWS, MOCK_ALUMNI, MOCK_JOBS, MAJORS } from '../constants';
+import React, { useState, useEffect } from 'react';
+import { UserRole, SiteSettings, User, Teacher, NewsItem, Alumni, JobListing, Major, GalleryItem } from '../types';
 import { 
   Lock, Settings, FileText, Users, Briefcase, LogOut, 
   Save, Plus, Trash2, CheckCircle, AlertCircle, LayoutDashboard,
-  Image as ImageIcon, Globe, Phone, Shield, UserCog, Edit, X, MapPin, Layers, Wifi, Monitor, PenTool, Book,
-  Info, Eye, EyeOff
+  Image as ImageIcon, Globe, Shield, UserCog, Edit, X, Layers, Info, Eye, EyeOff
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import ImageUpload from '../components/ImageUpload';
 import ThemeToggle from '../components/ThemeToggle';
-
-// Mock Initial Data for Users
-const INITIAL_USERS: User[] = [
-  { id: '1', name: 'Super Administrator', username: 'admin', role: UserRole.SUPERUSER, lastLogin: '2024-03-10 08:00' },
-  { id: '2', name: 'Budi Santoso', username: 'content_editor', role: UserRole.CONTENT_ADMIN, lastLogin: '2024-03-09 14:30' },
-  { id: '3', name: 'Siti Aminah', username: 'bkk_admin', role: UserRole.BKK_ADMIN, lastLogin: '2024-03-08 09:15' },
-];
+import { db } from '../services/database';
 
 const Admin: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,95 +22,42 @@ const Admin: React.FC = () => {
   const navigate = useNavigate();
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
-  // --- CMS STATES ---
+  // --- CMS STATES (INITIALIZED FROM DB) ---
+  const [settings, setSettings] = useState<SiteSettings>(db.getSettings());
+  const [users, setUsers] = useState<User[]>(db.getUsers());
+  const [teachers, setTeachers] = useState<Teacher[]>(db.getTeachers());
+  const [majorsList, setMajorsList] = useState<Major[]>(db.getMajors());
+  const [newsList, setNewsList] = useState<NewsItem[]>(db.getNews());
+  const [alumniList, setAlumniList] = useState<Alumni[]>(db.getAlumni());
+  const [jobList, setJobList] = useState<JobListing[]>(db.getJobs());
 
-  // Settings
-  const [settings, setSettings] = useState<SiteSettings>({
-    schoolName: SCHOOL_INFO.name,
-    shortName: SCHOOL_INFO.shortName,
-    motto: SCHOOL_INFO.motto,
-    tagline: SCHOOL_INFO.tagline,
-    logo: '/vite.svg', // Default logo placeholder
-    addressMain: SCHOOL_INFO.addressMain,
-    addressUnit2: SCHOOL_INFO.addressUnit2,
-    phone: "+62 851-6351-9670",
-    email: "info@smkmuca.sch.id",
-    heroBackground: SCHOOL_INFO.heroBackground,
-    maps: {
-      main: SCHOOL_INFO.mapUrlMain,
-      unit2: SCHOOL_INFO.mapUrlUnit2,
-    },
-    socials: { ...SCHOOL_INFO.socials },
-    principalWelcome: {
-      name: PRINCIPAL.name,
-      image: PRINCIPAL.image,
-      message: PRINCIPAL.message
-    },
-    facilities: [
-      { id: '1', title: "Bengkel Standar Industri", icon: 'Shield' },
-      { id: '2', title: "Free Hotspot Area", icon: 'Wifi' },
-      { id: '3', title: "Laboratorium Komputer", icon: 'Monitor' },
-      { id: '4', title: "Unit Produksi & Jasa", icon: 'PenTool' }
-    ],
-    gallery: [
-      { id: '1', image: 'https://picsum.photos/800/600?random=g1', caption: 'Gedung Utama' },
-      { id: '2', image: 'https://picsum.photos/800/600?random=g2', caption: 'Kegiatan Praktik' }
-    ]
-  });
-
-  // Users
-  const [users, setUsers] = useState<User[]>(INITIAL_USERS);
+  // Edit States
   const [newUser, setNewUser] = useState({ name: '', username: '', role: UserRole.CONTENT_ADMIN });
   const [showAddUser, setShowAddUser] = useState(false);
-
-  // Staff
-  const [teachers, setTeachers] = useState<Teacher[]>(MOCK_TEACHERS);
+  
   const [isEditingStaff, setIsEditingStaff] = useState(false);
   const [editingStaffId, setEditingStaffId] = useState<string | null>(null);
   
-  // Majors (Jurusan)
-  const [majorsList, setMajorsList] = useState<Major[]>(MAJORS);
   const [isEditingMajor, setIsEditingMajor] = useState(false);
   const [editingMajorId, setEditingMajorId] = useState<string | null>(null);
   const [majorForm, setMajorForm] = useState<Major>({ id: '', code: '', name: '', description: '', category: 'OTOMOTIF', image: '' });
 
-  // News
-  const [newsList, setNewsList] = useState<NewsItem[]>(MOCK_NEWS);
   const [isEditingNews, setIsEditingNews] = useState(false);
   const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
   const [newsForm, setNewsForm] = useState<NewsItem>({ id: '', title: '', category: 'Kegiatan', date: '', excerpt: '', content: '', image: '' });
 
-  // Alumni
-  const [alumniList, setAlumniList] = useState<Alumni[]>(MOCK_ALUMNI);
   const [isEditingAlumni, setIsEditingAlumni] = useState(false);
   const [editingAlumniId, setEditingAlumniId] = useState<string | null>(null);
   const [alumniForm, setAlumniForm] = useState<Alumni>({ id: '', name: '', graduationYear: '', jobTitle: '', company: '', testimonial: '', image: '' });
 
-  // BKK
-  const [jobList, setJobList] = useState<JobListing[]>(MOCK_JOBS);
   const [isEditingJob, setIsEditingJob] = useState(false);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
   const [jobForm, setJobForm] = useState<JobListing>({ id: '', title: '', company: '', location: '', deadline: '', type: 'Full-time' });
 
-  // Gallery
   const [newGalleryItem, setNewGalleryItem] = useState({ image: '', caption: '' });
 
-  // --- STAFF FORM STATE ---
   const initialStaffForm: Teacher = {
-    id: '',
-    name: '',
-    role: '',
-    category: 'Guru',
-    image: '',
-    subject: '',
-    bio: '',
-    email: '',
-    linkedin: '',
-    education: [],
-    responsibilities: [],
-    achievements: [],
-    hobbies: [],
-    teachingPhilosophy: ''
+    id: '', name: '', role: '', category: 'Guru', image: '', subject: '', bio: '', email: '', linkedin: '', education: [], responsibilities: [], achievements: [], hobbies: [], teachingPhilosophy: ''
   };
   const [staffForm, setStaffForm] = useState<Teacher>(initialStaffForm);
 
@@ -146,13 +85,44 @@ const Admin: React.FC = () => {
     navigate('/');
   };
 
+  // PERSISTENCE WRAPPERS
+  const saveAndSetSettings = (newSettings: SiteSettings) => {
+    setSettings(newSettings);
+    db.saveSettings(newSettings);
+  };
+  const saveAndSetUsers = (newUsers: User[]) => {
+    setUsers(newUsers);
+    db.saveUsers(newUsers);
+  };
+  const saveAndSetTeachers = (newTeachers: Teacher[]) => {
+    setTeachers(newTeachers);
+    db.saveTeachers(newTeachers);
+  };
+  const saveAndSetMajors = (newMajors: Major[]) => {
+    setMajorsList(newMajors);
+    db.saveMajors(newMajors);
+  };
+  const saveAndSetNews = (newNews: NewsItem[]) => {
+    setNewsList(newNews);
+    db.saveNews(newNews);
+  };
+  const saveAndSetAlumni = (newAlumni: Alumni[]) => {
+    setAlumniList(newAlumni);
+    db.saveAlumni(newAlumni);
+  };
+  const saveAndSetJobs = (newJobs: JobListing[]) => {
+    setJobList(newJobs);
+    db.saveJobs(newJobs);
+  };
+
+
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Saving settings:", settings);
+    saveAndSetSettings(settings);
     showToast("Pengaturan website berhasil disimpan!");
   };
 
-  // Gallery Handlers
+  // Gallery
   const handleAddGalleryItem = () => {
     if (!newGalleryItem.image) return showToast("Mohon upload foto terlebih dahulu", "error");
     const newItem: GalleryItem = {
@@ -160,31 +130,31 @@ const Admin: React.FC = () => {
       image: newGalleryItem.image,
       caption: newGalleryItem.caption || 'Tanpa Keterangan'
     };
-    setSettings(prev => ({
-      ...prev,
-      gallery: [...prev.gallery, newItem]
-    }));
+    saveAndSetSettings({
+      ...settings,
+      gallery: [...settings.gallery, newItem]
+    });
     setNewGalleryItem({ image: '', caption: '' });
     showToast("Foto berhasil ditambahkan ke galeri");
   };
 
   const handleDeleteGalleryItem = (id: string) => {
     if (confirm("Hapus foto ini dari galeri?")) {
-      setSettings(prev => ({
-        ...prev,
-        gallery: prev.gallery.filter(item => item.id !== id)
-      }));
+      saveAndSetSettings({
+        ...settings,
+        gallery: settings.gallery.filter(item => item.id !== id)
+      });
     }
   };
 
   const handleUpdateGalleryCaption = (id: string, caption: string) => {
-    setSettings(prev => ({
-      ...prev,
-      gallery: prev.gallery.map(item => item.id === id ? { ...item, caption } : item)
-    }));
+    saveAndSetSettings({
+      ...settings,
+      gallery: settings.gallery.map(item => item.id === id ? { ...item, caption } : item)
+    });
   };
 
-
+  // Users
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newUser.name || !newUser.username) return;
@@ -195,7 +165,7 @@ const Admin: React.FC = () => {
       role: newUser.role,
       lastLogin: '-'
     };
-    setUsers([...users, user]);
+    saveAndSetUsers([...users, user]);
     setNewUser({ name: '', username: '', role: UserRole.CONTENT_ADMIN });
     setShowAddUser(false);
     showToast("Pengguna baru berhasil ditambahkan!");
@@ -203,159 +173,110 @@ const Admin: React.FC = () => {
 
   const handleDeleteUser = (id: string) => {
     if (confirm("Apakah anda yakin ingin menghapus pengguna ini?")) {
-      setUsers(users.filter(u => u.id !== id));
+      saveAndSetUsers(users.filter(u => u.id !== id));
       showToast("Pengguna berhasil dihapus.");
     }
   };
 
-  // Staff Logic
-  const handleEditStaff = (teacher: Teacher) => {
-    setStaffForm(teacher);
-    setEditingStaffId(teacher.id);
-    setIsEditingStaff(true);
-  };
-  const handleCreateStaff = () => {
-    setStaffForm({ ...initialStaffForm, id: Date.now().toString() });
-    setEditingStaffId(null);
-    setIsEditingStaff(true);
-  };
-  const handleDeleteStaff = (id: string) => {
-    if (confirm("Hapus data staf ini?")) {
-      setTeachers(teachers.filter(t => t.id !== id));
-      showToast("Data staf dihapus.");
-    }
-  };
+  // Staff
   const handleSaveStaff = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingStaffId) {
-      setTeachers(teachers.map(t => t.id === editingStaffId ? staffForm : t));
+      saveAndSetTeachers(teachers.map(t => t.id === editingStaffId ? staffForm : t));
       showToast("Data staf diperbarui.");
     } else {
-      setTeachers([...teachers, { ...staffForm, id: Date.now().toString() }]);
+      saveAndSetTeachers([...teachers, { ...staffForm, id: Date.now().toString() }]);
       showToast("Staf baru ditambahkan.");
     }
     setIsEditingStaff(false);
   };
-
-  // Majors Logic
-  const handleEditMajor = (major: Major) => {
-    setMajorForm(major);
-    setEditingMajorId(major.id);
-    setIsEditingMajor(true);
-  };
-  const handleCreateMajor = () => {
-    setMajorForm({ id: Date.now().toString(), code: '', name: '', description: '', category: 'OTOMOTIF', image: '' });
-    setEditingMajorId(null);
-    setIsEditingMajor(true);
-  };
-  const handleDeleteMajor = (id: string) => {
-    if (confirm("Hapus jurusan ini?")) {
-      setMajorsList(majorsList.filter(m => m.id !== id));
-      showToast("Jurusan dihapus.");
+  const handleDeleteStaff = (id: string) => {
+    if(confirm("Hapus data ini?")) {
+        saveAndSetTeachers(teachers.filter(t => t.id !== id));
+        showToast("Data dihapus");
     }
-  };
+  }
+
+  // Majors
   const handleSaveMajor = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingMajorId) {
-      setMajorsList(majorsList.map(m => m.id === editingMajorId ? majorForm : m));
+      saveAndSetMajors(majorsList.map(m => m.id === editingMajorId ? majorForm : m));
       showToast("Jurusan diperbarui.");
     } else {
-      setMajorsList([...majorsList, { ...majorForm, id: Date.now().toString() }]);
+      saveAndSetMajors([...majorsList, { ...majorForm, id: Date.now().toString() }]);
       showToast("Jurusan ditambahkan.");
     }
     setIsEditingMajor(false);
   };
-
-  // News Logic
-  const handleEditNews = (item: NewsItem) => {
-    setNewsForm(item);
-    setEditingNewsId(item.id);
-    setIsEditingNews(true);
-  };
-  const handleCreateNews = () => {
-    setNewsForm({ id: Date.now().toString(), title: '', category: 'Kegiatan', date: new Date().toISOString().split('T')[0], excerpt: '', content: '', image: '' });
-    setEditingNewsId(null);
-    setIsEditingNews(true);
-  };
-  const handleDeleteNews = (id: string) => {
-    if (confirm("Hapus berita ini?")) {
-      setNewsList(newsList.filter(n => n.id !== id));
-      showToast("Berita dihapus.");
+  const handleDeleteMajor = (id: string) => {
+    if(confirm("Hapus jurusan?")) {
+        saveAndSetMajors(majorsList.filter(m => m.id !== id));
+        showToast("Jurusan dihapus");
     }
-  };
+  }
+
+  // News
   const handleSaveNews = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingNewsId) {
-      setNewsList(newsList.map(n => n.id === editingNewsId ? newsForm : n));
+      saveAndSetNews(newsList.map(n => n.id === editingNewsId ? newsForm : n));
       showToast("Berita diperbarui.");
     } else {
-      setNewsList([newsForm, ...newsList]);
+      saveAndSetNews([newsForm, ...newsList]);
       showToast("Berita diterbitkan.");
     }
     setIsEditingNews(false);
   };
-
-  // Alumni Logic
-  const handleEditAlumni = (item: Alumni) => {
-    setAlumniForm(item);
-    setEditingAlumniId(item.id);
-    setIsEditingAlumni(true);
-  };
-  const handleCreateAlumni = () => {
-    setAlumniForm({ id: Date.now().toString(), name: '', graduationYear: '', jobTitle: '', company: '', testimonial: '', image: '' });
-    setEditingAlumniId(null);
-    setIsEditingAlumni(true);
-  };
-  const handleDeleteAlumni = (id: string) => {
-    if (confirm("Hapus data alumni ini?")) {
-      setAlumniList(alumniList.filter(a => a.id !== id));
-      showToast("Data alumni dihapus.");
+  const handleDeleteNews = (id: string) => {
+    if(confirm("Hapus berita?")) {
+        saveAndSetNews(newsList.filter(n => n.id !== id));
+        showToast("Berita dihapus");
     }
-  };
+  }
+
+  // Alumni
   const handleSaveAlumni = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingAlumniId) {
-      setAlumniList(alumniList.map(a => a.id === editingAlumniId ? alumniForm : a));
+      saveAndSetAlumni(alumniList.map(a => a.id === editingAlumniId ? alumniForm : a));
       showToast("Data alumni diperbarui.");
     } else {
-      setAlumniList([alumniForm, ...alumniList]);
+      saveAndSetAlumni([alumniForm, ...alumniList]);
       showToast("Alumni ditambahkan.");
     }
     setIsEditingAlumni(false);
   };
-
-  // BKK Logic
-  const handleEditJob = (item: JobListing) => {
-    setJobForm(item);
-    setEditingJobId(item.id);
-    setIsEditingJob(true);
-  };
-  const handleCreateJob = () => {
-    setJobForm({ id: Date.now().toString(), title: '', company: '', location: '', deadline: '', type: 'Full-time' });
-    setEditingJobId(null);
-    setIsEditingJob(true);
-  };
-  const handleDeleteJob = (id: string) => {
-    if (confirm("Hapus lowongan ini?")) {
-      setJobList(jobList.filter(j => j.id !== id));
-      showToast("Lowongan dihapus.");
+  const handleDeleteAlumni = (id: string) => {
+    if(confirm("Hapus alumni?")) {
+        saveAndSetAlumni(alumniList.filter(a => a.id !== id));
+        showToast("Alumni dihapus");
     }
-  };
+  }
+
+  // Jobs
   const handleSaveJob = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingJobId) {
-      setJobList(jobList.map(j => j.id === editingJobId ? jobForm : j));
+      saveAndSetJobs(jobList.map(j => j.id === editingJobId ? jobForm : j));
       showToast("Lowongan diperbarui.");
     } else {
-      setJobList([jobForm, ...jobList]);
+      saveAndSetJobs([jobForm, ...jobList]);
       showToast("Lowongan ditambahkan.");
     }
     setIsEditingJob(false);
   };
+  const handleDeleteJob = (id: string) => {
+    if(confirm("Hapus lowongan?")) {
+        saveAndSetJobs(jobList.filter(j => j.id !== id));
+        showToast("Lowongan dihapus");
+    }
+  }
 
   // --- COMMON STYLES ---
-  const inputClass = "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-muca-blue outline-none text-slate-900 dark:text-white bg-white dark:bg-slate-700 transition-colors";
-  const labelClass = "block text-sm font-bold text-slate-900 dark:text-gray-200 mb-2";
+  // Ensure background and text colors are explicitly set for light and dark modes
+  const inputClass = "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-muca-blue outline-none text-slate-900 dark:text-white bg-white dark:bg-slate-700 transition-colors placeholder-gray-400 dark:placeholder-gray-500";
+  const labelClass = "block text-sm font-bold text-slate-900 dark:text-white mb-2";
   const cardClass = "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors";
 
   if (!isLoggedIn) {
@@ -411,6 +332,62 @@ const Admin: React.FC = () => {
     );
   }
 
+  // Handlers for switching tabs/modes
+  const handleEditMajor = (item: Major) => {
+    setMajorForm(item);
+    setEditingMajorId(item.id);
+    setIsEditingMajor(true);
+  }
+  const handleCreateMajor = () => {
+    setMajorForm({ id: Date.now().toString(), code: '', name: '', description: '', category: 'OTOMOTIF', image: '' });
+    setEditingMajorId(null);
+    setIsEditingMajor(true);
+  }
+
+  const handleEditStaff = (item: Teacher) => {
+    setStaffForm(item);
+    setEditingStaffId(item.id);
+    setIsEditingStaff(true);
+  }
+  const handleCreateStaff = () => {
+    setStaffForm({ ...initialStaffForm, id: Date.now().toString() });
+    setEditingStaffId(null);
+    setIsEditingStaff(true);
+  }
+
+  const handleEditNews = (item: NewsItem) => {
+    setNewsForm(item);
+    setEditingNewsId(item.id);
+    setIsEditingNews(true);
+  }
+  const handleCreateNews = () => {
+    setNewsForm({ id: Date.now().toString(), title: '', category: 'Kegiatan', date: new Date().toISOString().split('T')[0], excerpt: '', content: '', image: '' });
+    setEditingNewsId(null);
+    setIsEditingNews(true);
+  }
+
+  const handleEditAlumni = (item: Alumni) => {
+    setAlumniForm(item);
+    setEditingAlumniId(item.id);
+    setIsEditingAlumni(true);
+  }
+  const handleCreateAlumni = () => {
+    setAlumniForm({ id: Date.now().toString(), name: '', graduationYear: '', jobTitle: '', company: '', testimonial: '', image: '' });
+    setEditingAlumniId(null);
+    setIsEditingAlumni(true);
+  }
+
+  const handleEditJob = (item: JobListing) => {
+    setJobForm(item);
+    setEditingJobId(item.id);
+    setIsEditingJob(true);
+  }
+  const handleCreateJob = () => {
+    setJobForm({ id: Date.now().toString(), title: '', company: '', location: '', deadline: '', type: 'Full-time' });
+    setEditingJobId(null);
+    setIsEditingJob(true);
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-slate-950 flex font-sans transition-colors duration-300">
       <SEO title="Admin Dashboard" description="CMS SMK MUCA" />
@@ -447,49 +424,37 @@ const Admin: React.FC = () => {
       <main className="flex-1 md:ml-64 p-8 overflow-y-auto h-screen custom-scrollbar relative z-10">
         <header className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-slate-800 dark:text-white capitalize flex items-center gap-2">
-              {activeTab === 'settings' && <Settings className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'users' && <Shield className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'staff' && <UserCog className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'majors' && <Layers className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'dashboard' && <LayoutDashboard className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'berita' && <FileText className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'alumni' && <Users className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'bkk' && <Briefcase className="text-muca-blue dark:text-blue-400"/>}
-              {activeTab === 'majors' ? 'Jurusan' : activeTab.replace('_', ' ')}
+             <h2 className="text-3xl font-bold text-slate-800 dark:text-white capitalize flex items-center gap-2">
+              {activeTab === 'dashboard' && "Dashboard Overview"}
+              {activeTab !== 'dashboard' && activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Kelola konten dan pengaturan website SMK MUCA.</p>
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <div className="text-right hidden sm:block">
-               <p className="text-sm font-bold text-slate-800 dark:text-white">Super Admin</p>
-               <p className="text-xs text-green-600 dark:text-green-400 flex items-center justify-end gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span> Online</p>
-            </div>
-            <div className="w-10 h-10 bg-gradient-to-tr from-muca-blue to-blue-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg">SA</div>
+            <div className="w-10 h-10 bg-muca-blue rounded-full flex items-center justify-center text-white font-bold">SA</div>
           </div>
         </header>
 
-        {/* DASHBOARD */}
+        {/* --- DYNAMIC CONTENT RENDERING --- */}
         {activeTab === 'dashboard' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
-            {[
-              { label: 'Total Berita', value: newsList.length, color: 'blue', icon: FileText },
-              { label: 'Total Jurusan', value: majorsList.length, color: 'green', icon: Layers },
-              { label: 'Total Staff', value: teachers.length, color: 'orange', icon: UserCog },
-              { label: 'Lowongan Aktif', value: jobList.length, color: 'green', icon: Briefcase },
-            ].map((stat, idx) => (
-              <div key={idx} className={cardClass + " p-6 flex items-center gap-4"}>
-                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${stat.color}-50 dark:bg-slate-700 text-${stat.color}-600 dark:text-${stat.color}-400`}>
-                    <stat.icon size={24} />
-                 </div>
-                 <div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">{stat.label}</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
-                 </div>
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className={cardClass + " p-6"}>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">Total Berita</p>
+                 <p className="text-3xl font-bold text-slate-900 dark:text-white">{newsList.length}</p>
               </div>
-            ))}
-          </div>
+              <div className={cardClass + " p-6"}>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">Total Staff</p>
+                 <p className="text-3xl font-bold text-slate-900 dark:text-white">{teachers.length}</p>
+              </div>
+              <div className={cardClass + " p-6"}>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">Total Jurusan</p>
+                 <p className="text-3xl font-bold text-slate-900 dark:text-white">{majorsList.length}</p>
+              </div>
+              <div className={cardClass + " p-6"}>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">Lowongan BKK</p>
+                 <p className="text-3xl font-bold text-slate-900 dark:text-white">{jobList.length}</p>
+              </div>
+           </div>
         )}
 
         {/* MAJORS TAB */}
@@ -723,7 +688,7 @@ const Admin: React.FC = () => {
                       <button onClick={handleCreateAlumni} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Tambah Alumni</button>
                    </div>
                    <table className="w-full text-left">
-                      <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4">Nama</th><th className="p-4">Lulusan</th><th className="p-4">Pekerjaan</th><th className="p-4 text-right">Aksi</th></tr></thead>
+                      <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Nama</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Lulusan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Pekerjaan</th><th className="p-4 text-right">Aksi</th></tr></thead>
                       <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                          {alumniList.map(item => (
                             <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
@@ -768,7 +733,7 @@ const Admin: React.FC = () => {
                       <button onClick={handleCreateJob} className="bg-muca-blue text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Tambah Lowongan</button>
                    </div>
                    <table className="w-full text-left">
-                      <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4">Posisi</th><th className="p-4">Perusahaan</th><th className="p-4">Tipe</th><th className="p-4">Deadline</th><th className="p-4 text-right">Aksi</th></tr></thead>
+                      <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-gray-700"><tr><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Posisi</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Perusahaan</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Tipe</th><th className="p-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Deadline</th><th className="p-4 text-right">Aksi</th></tr></thead>
                       <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                          {jobList.map(item => (
                             <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
@@ -933,12 +898,12 @@ const Admin: React.FC = () => {
                     <div className="mb-8 p-6 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-200 dark:border-gray-600 animate-fade-in-up">
                        <h4 className="font-bold text-gray-800 dark:text-white mb-4">Tambah Pengguna Baru</h4>
                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                          <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Nama Lengkap</label><input type="text" value={newUser.name} onChange={e => setNewUser({...newUser, name: e.target.value})} className="w-full px-3 py-2 rounded border dark:border-gray-600 dark:bg-slate-800 dark:text-white text-sm" /></div>
-                          <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Username</label><input type="text" value={newUser.username} onChange={e => setNewUser({...newUser, username: e.target.value})} className="w-full px-3 py-2 rounded border dark:border-gray-600 dark:bg-slate-800 dark:text-white text-sm" /></div>
-                          <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Role</label><select value={newUser.role} onChange={e => setNewUser({...newUser, role: e.target.value as any})} className="w-full px-3 py-2 rounded border dark:border-gray-600 dark:bg-slate-800 dark:text-white text-sm"><option value={UserRole.CONTENT_ADMIN}>Content Admin</option><option value={UserRole.BKK_ADMIN}>BKK Admin</option><option value={UserRole.SUPERUSER}>Superuser</option></select></div>
+                          <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Nama Lengkap</label><input type="text" value={newUser.name} onChange={e => setNewUser({...newUser, name: e.target.value})} className={inputClass + " text-sm"} /></div>
+                          <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Username</label><input type="text" value={newUser.username} onChange={e => setNewUser({...newUser, username: e.target.value})} className={inputClass + " text-sm"} /></div>
+                          <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Role</label><select value={newUser.role} onChange={e => setNewUser({...newUser, role: e.target.value as any})} className={inputClass + " text-sm"}><option value={UserRole.CONTENT_ADMIN}>Content Admin</option><option value={UserRole.BKK_ADMIN}>BKK Admin</option><option value={UserRole.SUPERUSER}>Superuser</option></select></div>
                           <div className="flex gap-2">
-                             <button onClick={handleAddUser} className="bg-green-600 text-white px-4 py-2 rounded font-bold text-sm flex-1">Simpan</button>
-                             <button onClick={() => setShowAddUser(false)} className="bg-gray-300 text-gray-700 px-4 py-2 rounded font-bold text-sm">Batal</button>
+                             <button onClick={handleAddUser} className="bg-green-600 text-white px-4 py-2 rounded font-bold text-sm flex-1 hover:bg-green-700">Simpan</button>
+                             <button onClick={() => setShowAddUser(false)} className="bg-gray-300 dark:bg-slate-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded font-bold text-sm hover:bg-gray-400 dark:hover:bg-slate-500">Batal</button>
                           </div>
                        </div>
                     </div>
@@ -949,8 +914,8 @@ const Admin: React.FC = () => {
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                        {users.map(u => (
                           <tr key={u.id}>
-                             <td className="p-4 font-bold dark:text-white">{u.name}</td>
-                             <td className="p-4 dark:text-gray-300 text-sm font-mono">@{u.username}</td>
+                             <td className="p-4 font-bold text-slate-800 dark:text-white">{u.name}</td>
+                             <td className="p-4 text-gray-700 dark:text-gray-300 text-sm font-mono">@{u.username}</td>
                              <td className="p-4"><span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 px-2 py-1 rounded text-xs font-bold uppercase">{u.role}</span></td>
                              <td className="p-4 text-gray-500 dark:text-gray-400 text-sm">{u.lastLogin}</td>
                              <td className="p-4 text-right"><button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2"><Trash2 size={18}/></button></td>
