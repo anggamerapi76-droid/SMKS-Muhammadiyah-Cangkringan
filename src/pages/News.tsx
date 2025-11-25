@@ -102,7 +102,7 @@ const News: React.FC = () => {
            <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-full"></div>
            <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
         </div>
-        <div className="h-5 bg-gray-200 dark:bg-slate-700 rounded w-32 mt-auto"></div>
+        <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded-full w-40 mt-auto"></div>
       </div>
     </div>
   );
@@ -165,9 +165,17 @@ const News: React.FC = () => {
             ) : news.length > 0 ? (
                 news.map(item => (
                 <Link to={`/berita/${item.id}`} key={item.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 overflow-hidden group flex flex-col h-full animate-fade-in hover:-translate-y-1 relative">
-                    <div className="relative h-56 overflow-hidden flex-shrink-0">
+                    <div className="relative h-56 overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-slate-700">
                     <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-slate-900/10 transition-colors z-10"></div>
-                    <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                    <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        loading="lazy" 
+                        decoding="async"
+                        width="600"
+                        height="400"
+                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" 
+                    />
                     
                     <div className="absolute top-3 right-3 z-30">
                        <button
@@ -199,8 +207,9 @@ const News: React.FC = () => {
                         {item.title}
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 mb-6 line-clamp-3 leading-relaxed flex-grow">{item.excerpt}</p>
-                    <span className="inline-flex items-center text-slate-900 dark:text-white font-bold hover:text-muca-yellow transition-colors mt-auto">
-                        Baca Selengkapnya <ArrowRight size={16} className="ml-2" />
+                    
+                    <span className="inline-flex items-center justify-center gap-2 bg-muca-blue text-white hover:bg-blue-700 px-5 py-2.5 rounded-full font-bold text-sm transition-all transform hover:scale-105 shadow-md mt-auto w-fit group-hover:shadow-lg">
+                        Baca Selengkapnya <ArrowRight size={16} />
                     </span>
                     </div>
                 </Link>
