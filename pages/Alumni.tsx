@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { MOCK_ALUMNI } from '../constants';
 import { Quote, UserPlus, CheckCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Alumni: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -13,6 +15,11 @@ const Alumni: React.FC = () => {
 
   return (
     <div className="pt-24 pb-20 bg-gray-50 min-h-screen">
+      <SEO 
+        title="Alumni" 
+        description="Jejak sukses dan testimoni alumni SMK Muhammadiyah Cangkringan. Gabung ikatan alumni untuk peluang karir." 
+      />
+
       {/* Header */}
       <div className="bg-muca-blue text-white py-20 mb-16">
         <div className="container mx-auto px-4 text-center">
@@ -27,10 +34,18 @@ const Alumni: React.FC = () => {
         {/* Featured Alumni Reviews */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
           {MOCK_ALUMNI.map((alum) => (
-            <div key={alum.id} className="bg-white p-8 rounded-2xl shadow-lg border-t-4 border-muca-yellow relative">
+            <div 
+              key={alum.id} 
+              className="bg-white p-8 rounded-2xl shadow-lg border-t-4 border-muca-yellow relative hover:scale-105 hover:shadow-xl transition-all duration-300 transform"
+            >
               <Quote className="absolute top-6 right-6 text-gray-200" size={48} />
               <div className="flex items-center gap-4 mb-6">
-                <img src={alum.image} alt={alum.name} className="w-16 h-16 rounded-full object-cover border-2 border-muca-blue" />
+                <img 
+                  src={alum.image} 
+                  alt={alum.name} 
+                  loading="lazy"
+                  className="w-16 h-16 rounded-full object-cover border-2 border-muca-blue" 
+                />
                 <div>
                   <h3 className="font-bold text-slate-900 text-lg">{alum.name}</h3>
                   <p className="text-sm text-gray-500">{alum.jobTitle} at {alum.company}</p>

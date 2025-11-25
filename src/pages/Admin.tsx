@@ -6,7 +6,7 @@ import {
   Lock, Settings, FileText, Users, Briefcase, LogOut, 
   Save, Plus, Trash2, CheckCircle, AlertCircle, LayoutDashboard,
   Image as ImageIcon, Globe, Phone, Shield, UserCog, Edit, X, MapPin, Layers, Wifi, Monitor, PenTool, Book,
-  Info
+  Info, Eye, EyeOff
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -24,6 +24,7 @@ const Admin: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
   const navigate = useNavigate();
@@ -373,11 +374,32 @@ const Admin: React.FC = () => {
             {error && <div className="bg-red-100 text-red-600 p-3 rounded text-sm text-center flex items-center justify-center gap-2"><AlertCircle size={16}/>{error}</div>}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-muca-blue outline-none" placeholder="superadmin" />
+              <input 
+                type="text" 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)} 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-muca-blue outline-none bg-white text-slate-900 placeholder-gray-400" 
+                placeholder="superadmin" 
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-muca-blue outline-none" placeholder="••••••••" />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-muca-blue outline-none bg-white text-slate-900 placeholder-gray-400 pr-12" 
+                  placeholder="••••••••" 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             <button type="submit" className="w-full bg-muca-blue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2">
               <Lock size={18} /> Masuk Dashboard

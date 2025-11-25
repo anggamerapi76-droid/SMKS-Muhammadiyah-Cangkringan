@@ -5,12 +5,27 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SMK Muhammadiyah Cangkringan | SMK Pusat Keunggulan</title>
+    
+    <!-- Base Meta Tags -->
+    <meta name="description" content="SMK Muhammadiyah Cangkringan (SMK MUCA) adalah SMK Pusat Keunggulan di Sleman, Yogyakarta. Mencetak generasi religius, unggul, dan kompeten dengan kurikulum industri." />
+    <meta name="keywords" content="SMK Muhammadiyah Cangkringan, SMK MUCA, SMK Pusat Keunggulan, SMK Sleman, TKRO, TBSM, Akuntansi, Tata Busana, BDP, Sekolah Vokasi, PPDB Sleman" />
+    <meta name="author" content="SMK Muhammadiyah Cangkringan" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SMK Muhammadiyah Cangkringan" />
+    <meta property="og:title" content="SMK Muhammadiyah Cangkringan | SMK Pusat Keunggulan" />
+    <meta property="og:description" content="Sekolah Menengah Kejuruan Pusat Keunggulan di Yogyakarta. Mencetak generasi siap kerja, santun, dan kompeten." />
+    <meta property="og:image" content="https://picsum.photos/1200/630?random=school_banner" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class', // Enable class-based dark mode
         theme: {
           extend: {
             fontFamily: {
@@ -37,6 +52,9 @@
       ::-webkit-scrollbar-track {
         background: #f1f1f1;
       }
+      .dark ::-webkit-scrollbar-track {
+        background: #1e293b;
+      }
       ::-webkit-scrollbar-thumb {
         background: #888;
         border-radius: 4px;
@@ -57,7 +75,7 @@
 }
 </script>
 </head>
-  <body>
+  <body class="bg-white dark:bg-slate-900 transition-colors duration-300">
     <div id="root"></div>
   </body>
 </html>

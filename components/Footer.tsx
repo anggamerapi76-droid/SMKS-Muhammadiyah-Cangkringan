@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { SCHOOL_INFO } from '../constants';
-import { Instagram, Youtube, Facebook, MapPin, Mail, Phone } from 'lucide-react';
+import { Instagram, Youtube, Facebook, MapPin, Mail, Phone, Music } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-slate-900 text-white pt-16 pb-8 border-t-4 border-muca-yellow">
+    <footer className="bg-slate-900 dark:bg-slate-950 text-white pt-16 pb-8 border-t-4 border-muca-yellow">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           
@@ -20,9 +21,10 @@ const Footer: React.FC = () => {
               Sekolah Menengah Kejuruan Pusat Keunggulan yang berkomitmen mencetak generasi unggul, islami, dan kompeten di dunia kerja.
             </p>
             <div className="flex gap-4">
-              <a href={SCHOOL_INFO.socials.instagram} target="_blank" rel="noreferrer" className="bg-gray-800 p-2 rounded hover:bg-pink-600 transition-colors"><Instagram size={20} /></a>
-              <a href={SCHOOL_INFO.socials.youtube} target="_blank" rel="noreferrer" className="bg-gray-800 p-2 rounded hover:bg-red-600 transition-colors"><Youtube size={20} /></a>
-              <a href={SCHOOL_INFO.socials.facebook} target="_blank" rel="noreferrer" className="bg-gray-800 p-2 rounded hover:bg-blue-600 transition-colors"><Facebook size={20} /></a>
+              <a href={SCHOOL_INFO.socials.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="bg-gray-800 p-2 rounded hover:bg-pink-600 transition-colors focus:ring-2 focus:ring-white outline-none"><Instagram size={20} /></a>
+              <a href={SCHOOL_INFO.socials.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="bg-gray-800 p-2 rounded hover:bg-red-600 transition-colors focus:ring-2 focus:ring-white outline-none"><Youtube size={20} /></a>
+              <a href={SCHOOL_INFO.socials.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok" className="bg-gray-800 p-2 rounded hover:bg-black transition-colors focus:ring-2 focus:ring-white outline-none"><Music size={20} /></a>
+              <a href={SCHOOL_INFO.socials.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="bg-gray-800 p-2 rounded hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-white outline-none"><Facebook size={20} /></a>
             </div>
           </div>
 
@@ -30,11 +32,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-bold mb-6 text-white border-l-4 border-muca-yellow pl-3">Tautan Cepat</h3>
             <ul className="space-y-3 text-gray-400">
-              <li><a href="#" className="hover:text-muca-yellow transition-colors">Profil Sekolah</a></li>
-              <li><a href="#" className="hover:text-muca-yellow transition-colors">Visi & Misi</a></li>
-              <li><a href={SCHOOL_INFO.spmbUrl} className="hover:text-muca-yellow transition-colors">Info PPDB</a></li>
-              <li><a href="#" className="hover:text-muca-yellow transition-colors">Bursa Kerja Khusus</a></li>
-              <li><a href="#" className="hover:text-muca-yellow transition-colors">Galeri Kegiatan</a></li>
+              <li><a href="#" className="hover:text-muca-yellow transition-colors focus:text-muca-yellow outline-none">Profil Sekolah</a></li>
+              <li><a href="#" className="hover:text-muca-yellow transition-colors focus:text-muca-yellow outline-none">Visi & Misi</a></li>
+              <li><a href={SCHOOL_INFO.spmbUrl} className="hover:text-muca-yellow transition-colors focus:text-muca-yellow outline-none">Info PPDB</a></li>
+              <li><a href="#" className="hover:text-muca-yellow transition-colors focus:text-muca-yellow outline-none">Bursa Kerja Khusus</a></li>
+              <li><a href="#" className="hover:text-muca-yellow transition-colors focus:text-muca-yellow outline-none">Galeri Kegiatan</a></li>
             </ul>
           </div>
 
@@ -52,11 +54,11 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="text-muca-yellow flex-shrink-0" size={18} />
-                <span>+62 851-6351-9670</span>
+                <span>{SCHOOL_INFO.phone}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="text-muca-yellow flex-shrink-0" size={18} />
-                <span>info@smkmuca.sch.id</span>
+                <span>{SCHOOL_INFO.email}</span>
               </li>
             </ul>
           </div>
@@ -73,7 +75,7 @@ const Footer: React.FC = () => {
                   style={{border:0}} 
                   allowFullScreen 
                   loading="lazy"
-                  title="Main Campus"
+                  title="Lokasi Gedung Utama SMK Muhammadiyah Cangkringan"
                   className="group-hover:opacity-75 transition-opacity"
                 ></iframe>
                 <span className="absolute bottom-1 right-2 text-xs bg-black/70 px-2 py-1 rounded text-white pointer-events-none">Gedung Utama</span>
@@ -86,7 +88,7 @@ const Footer: React.FC = () => {
                   style={{border:0}} 
                   allowFullScreen 
                   loading="lazy"
-                  title="Unit 2 Campus"
+                  title="Lokasi Unit 2 Bengkel SMK Muhammadiyah Cangkringan"
                   className="group-hover:opacity-75 transition-opacity"
                 ></iframe>
                 <span className="absolute bottom-1 right-2 text-xs bg-black/70 px-2 py-1 rounded text-white pointer-events-none">Unit 2 (Bengkel)</span>
@@ -97,7 +99,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} SMK Muhammadiyah Cangkringan. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} IT SMK Muhammadiyah Cangkringan. ALL Rights Reserved.</p>
         </div>
       </div>
     </footer>
