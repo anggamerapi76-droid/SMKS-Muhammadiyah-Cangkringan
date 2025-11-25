@@ -3,7 +3,7 @@ import Hero from '../components/Hero';
 import MajorCard from '../components/MajorCard';
 import InstagramSection from '../components/InstagramSection';
 import { MAJORS, MOCK_NEWS } from '../constants';
-import { Calendar, ArrowRight, Award, CheckCircle2 } from 'lucide-react';
+import { Calendar, ArrowRight, Award, CheckCircle2, Target, Zap, Shield, Wifi, PenTool, Monitor } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
@@ -64,6 +64,55 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* SECTION: Visi & Misi (Added for Menu Integration) */}
+      <section id="visi" className="py-20 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
+           <div className="absolute top-10 right-10 w-64 h-64 bg-muca-yellow rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+           <div className="absolute bottom-10 left-10 w-64 h-64 bg-muca-blue rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-muca-yellow font-bold tracking-widest uppercase mb-2">Visi & Misi</h2>
+            <h3 className="text-3xl md:text-4xl font-serif font-bold mb-4">Landasan Pendidikan Kami</h3>
+            <p className="text-gray-400">Mewujudkan lulusan yang tidak hanya kompeten secara teknis, tetapi juga memiliki fondasi agama yang kokoh.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
+              <div className="flex items-center gap-3 mb-6">
+                <Target className="text-muca-yellow" size={32} />
+                <h3 className="text-2xl font-bold">Visi Sekolah</h3>
+              </div>
+              <p className="text-lg leading-relaxed italic text-gray-200">
+                "Terwujudnya tamatan yang berakhlak mulia, kompeten, unggul, mandiri, dan berwawasan lingkungan."
+              </p>
+            </div>
+
+            <div className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
+               <div className="flex items-center gap-3 mb-6">
+                <Zap className="text-muca-yellow" size={32} />
+                <h3 className="text-2xl font-bold">Misi Utama</h3>
+              </div>
+              <ul className="space-y-4 text-gray-300">
+                <li className="flex gap-3">
+                  <div className="mt-1.5 w-2 h-2 bg-muca-yellow rounded-full"></div>
+                  <p>Menyelenggarakan pendidikan berbasis nilai-nilai keislaman dan Kemuhammadiyahan.</p>
+                </li>
+                <li className="flex gap-3">
+                  <div className="mt-1.5 w-2 h-2 bg-muca-yellow rounded-full"></div>
+                  <p>Mengembangkan pembelajaran berbasis kompetensi dan teknologi informasi.</p>
+                </li>
+                <li className="flex gap-3">
+                  <div className="mt-1.5 w-2 h-2 bg-muca-yellow rounded-full"></div>
+                  <p>Meningkatkan kerjasama dengan Dunia Usaha dan Dunia Industri (DUDI).</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Majors Section */}
       <section id="jurusan" className="py-24 bg-slate-50 relative">
         <div className="container mx-auto px-4 lg:px-8">
@@ -81,8 +130,42 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+       {/* SECTION: Fasilitas (Added for Menu Integration) */}
+       <section id="fasilitas" className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+           <div className="flex flex-col md:flex-row gap-12 items-center">
+              <div className="md:w-1/3">
+                 <h2 className="text-muca-blue font-bold tracking-widest uppercase mb-2">Fasilitas</h2>
+                 <h3 className="text-3xl font-serif font-bold text-slate-900 mb-6">Sarana Penunjang Pembelajaran</h3>
+                 <p className="text-gray-600 mb-6">Kami menyediakan fasilitas lengkap sesuai standar industri untuk memastikan siswa siap kerja.</p>
+                 <a href="#jurusan" className="text-muca-blue font-bold flex items-center gap-2 hover:underline">
+                    Lihat Galeri Sekolah <ArrowRight size={16}/>
+                 </a>
+              </div>
+              <div className="md:w-2/3 grid grid-cols-2 gap-4">
+                  <div className="bg-slate-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <Shield className="mx-auto text-muca-yellow mb-3" size={32} />
+                     <h4 className="font-bold text-slate-900">Bengkel Standar Industri</h4>
+                  </div>
+                  <div className="bg-slate-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <Wifi className="mx-auto text-muca-yellow mb-3" size={32} />
+                     <h4 className="font-bold text-slate-900">Free Hotspot Area</h4>
+                  </div>
+                  <div className="bg-slate-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <Monitor className="mx-auto text-muca-yellow mb-3" size={32} />
+                     <h4 className="font-bold text-slate-900">Laboratorium Komputer</h4>
+                  </div>
+                  <div className="bg-slate-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow border border-gray-100">
+                     <PenTool className="mx-auto text-muca-yellow mb-3" size={32} />
+                     <h4 className="font-bold text-slate-900">Unit Produksi & Jasa</h4>
+                  </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
       {/* Latest News / Events */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-gray-50 border-t border-gray-200">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
             <div>
@@ -95,7 +178,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {MOCK_NEWS.map(news => (
+            {MOCK_NEWS.slice(0, 3).map(news => (
               <div key={news.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 overflow-hidden group">
                 <div className="relative h-56 overflow-hidden">
                   <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-slate-900/10 transition-colors z-10"></div>
